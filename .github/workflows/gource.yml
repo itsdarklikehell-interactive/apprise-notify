@@ -3,6 +3,12 @@ name: Gource visualization
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - "gource.mp4"
+  pull_request:
+    branches: [main]
+    paths-ignore:
+      - "gource.mp4"
   workflow_dispatch:
 
 jobs:
@@ -58,6 +64,7 @@ jobs:
           retention-days: 30
 
       - name: Commit gource videos
+        if: ${{ github.event_name != 'pull_request' && github.ref_name == github.event.repository.default_branch }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"

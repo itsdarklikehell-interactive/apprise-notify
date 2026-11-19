@@ -1,7 +1,8 @@
 name: Pull Request Labeler
 
 on:
-  - pull_request_target
+  pull_request_target:
+    types: [opened, synchronize, reopened, ready_for_review]
 
 jobs:
   labeler:
@@ -10,6 +11,12 @@ jobs:
       contents: read
       pull-requests: write
     steps:
-      - uses: actions/labeler@v5
+      - name: Apply labels when configuration exists
+        if: ${{ hashFiles('.github/labeler.yml') != '' }}
+        uses: actions/labeler@v5
         with:
           configuration-path: .github/labeler.yml
+
+      - name: Skip when configuration is missing
+        if: ${{ hashFiles('.github/labeler.yml') == '' }}
+        run: echo "::notice::No .github/labeler.yml; automatic labeling is skipped."
